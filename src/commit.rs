@@ -10,6 +10,7 @@ pub struct FileInfo {
 
 pub type FileList = HashMap<String, Bytes>;
 
+#[derive(Clone)]
 pub struct CommitRequest {
     pub branch: String,
     pub author: String,

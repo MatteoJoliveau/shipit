@@ -2,12 +2,10 @@ use anyhow::Result;
 use json_patch::Patch;
 use serde::Deserialize;
 
-use crate::providers::{
+use crate::{
     commit::{FileInfo, FileList},
     repository::Repository,
 };
-
-use self::json::update_json_file;
 
 pub mod json;
 
@@ -23,7 +21,7 @@ pub fn mutate(repository: &impl Repository, mutations: &[Mutation]) -> Result<Fi
         let delta = match mutation {
             Mutation::Json { file, patch } => {
                 let to_patch = repository.get(&file.file, &file.reference)?;
-                let patched = update_json_file(&to_patch, patch)?;
+                let patched = json::update_file(&to_patch, patch)?;
                 FileList::from([(file.file.clone(), patched)])
             }
         };

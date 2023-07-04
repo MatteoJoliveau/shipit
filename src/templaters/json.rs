@@ -2,7 +2,7 @@ use anyhow::Result;
 use bytes::Bytes;
 use json_patch::{patch, Patch};
 
-pub fn update_json_file(file: &Bytes, changes: &Patch) -> Result<Bytes> {
+pub fn update_file(file: &Bytes, changes: &Patch) -> Result<Bytes> {
     let mut value = serde_json::from_slice(&file)?;
 
     patch(&mut value, &changes)?;
@@ -29,10 +29,10 @@ mod tests {
     }
 
     #[test]
-    fn test_update_json_file() {
+    fn test_update_file() {
         let original = json!({"test": {"nested": "dummy"}});
 
-        let file = update_json_file(
+        let file = update_file(
             &Bytes::from(serde_json::to_vec(&original).unwrap()),
             &Patch(vec![PatchOperation::Replace(ReplaceOperation {
                 path: "/test/nested".to_string(),
