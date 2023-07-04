@@ -12,9 +12,9 @@ GitOps-enabled environments use git repositories to store deployment manifests. 
 
 *(TODO) means it's not supported, but coming soon!*
 
+- [Gitea]
 - (TODO) [Azure DevOps]
 - (TODO) [BitBucket] (only BitBucket cloud ie. bitbucket.org)
-- (TODO) [Gitea]
 - (TODO) [GitHub] (both GitHub.com and GitHub Enterprise Server)
 - (TODO) [GitLab] (both self-managed and gitlab.com)
 
