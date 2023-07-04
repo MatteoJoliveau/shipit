@@ -7,7 +7,7 @@ use crate::{
     repository::Repository,
 };
 
-pub mod json;
+mod json;
 
 #[derive(Deserialize)]
 #[serde(tag = "templater")]

@@ -2,7 +2,7 @@ use crate::{
     commit::{CommitRequest, FileList},
     repository::Repository,
 };
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use base64::{engine::general_purpose, Engine};
 use bytes::Bytes;
 use reqwest::{
@@ -21,14 +21,16 @@ pub struct Gitea {
     api_url: String,
     project_id: String,
     credentials: String,
+    client: Client,
 }
 
 impl Gitea {
-    fn new(api_url: String, project_id: String, credentials: String) -> Self {
+    pub fn new(api_url: String, project_id: String, credentials: String) -> Self {
         Self {
             api_url,
             project_id,
             credentials,
+            client: Client::new(),
         }
     }
 
@@ -40,8 +42,8 @@ impl Gitea {
     }
 
     fn file_sha(&self, path: &str, reference: &str) -> Result<String> {
-        let client = Client::new();
-        let response = client
+        let response = self
+            .client
             .get(format!(
                 "{}/repos/{}/contents/{}",
                 self.api_url, self.project_id, path
@@ -61,33 +63,31 @@ impl Gitea {
             .iter()
             .take(1)
             .next()
-            .ok_or(anyhow::Error::msg("No file found"))?;
+            .ok_or_else(|| anyhow!("No file found"))?;
 
         // if the original file already exists we need to provide their latest SHA
-        let sha = self
-            .file_sha(file, &payload.branch)
-            .unwrap_or_else(|_| "".into());
+        let sha = self.file_sha(file, &payload.branch).unwrap_or_default();
 
-        Client::new()
+        let body = json!({
+            "author": {
+              "name": author,
+              "email": email
+            },
+            "message": payload.message,
+            "branch": payload.branch,
+            "content": general_purpose::STANDARD.encode(content),
+            "sha": sha,
+        })
+        .to_string();
+
+        self.client
             .put(format!(
                 "{}/repos/{}/contents/{}",
                 self.api_url, self.project_id, file
             ))
             .header(AUTHORIZATION, self.auth_header())
             .header(CONTENT_TYPE, "application/json")
-            .body(
-                json!({
-                "author": {
-                  "name": author,
-                  "email": email
-                },
-                "message": payload.message,
-                "branch": payload.branch,
-                "content": general_purpose::STANDARD.encode(content),
-                "sha": sha,
-                })
-                .to_string(),
-            )
+            .body(body)
             .send()?;
 
         Ok(())
@@ -96,8 +96,8 @@ impl Gitea {
 
 impl Repository for Gitea {
     fn get(&self, path: &str, reference: &str) -> Result<Bytes> {
-        let client = Client::new();
-        let response = client
+        let response = self
+            .client
             .get(format!(
                 "{}/repos/{}/raw/{}",
                 self.api_url, self.project_id, path
