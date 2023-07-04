@@ -1,12 +1,5 @@
 use bytes::Bytes;
-use serde::Deserialize;
 use std::collections::HashMap;
-
-#[derive(Deserialize)]
-pub struct FileInfo {
-    pub file: String,
-    pub reference: String,
-}
 
 pub type FileList = HashMap<String, Bytes>;
 

@@ -51,6 +51,15 @@ impl Gitea {
             .query(&[("ref", reference)])
             .header(AUTHORIZATION, self.auth_header())
             .send()?;
+
+        if response.status() == 404 {
+            return Ok("".into());
+        }
+
+        if !response.status().is_success() {
+            return Err(anyhow!(response.text()?));
+        }
+
         Ok(response.json::<GiteaFileInfo>()?.sha)
     }
 
@@ -66,7 +75,7 @@ impl Gitea {
             .ok_or_else(|| anyhow!("No file found"))?;
 
         // if the original file already exists we need to provide their latest SHA
-        let sha = self.file_sha(file, &payload.branch).unwrap_or_default();
+        let sha = self.file_sha(file, &payload.branch)?;
 
         let body = json!({
             "author": {
@@ -80,7 +89,8 @@ impl Gitea {
         })
         .to_string();
 
-        self.client
+        let response = self
+            .client
             .put(format!(
                 "{}/repos/{}/contents/{}",
                 self.api_url, self.project_id, file
@@ -89,6 +99,10 @@ impl Gitea {
             .header(CONTENT_TYPE, "application/json")
             .body(body)
             .send()?;
+
+        if !response.status().is_success() {
+            return Err(anyhow!(response.text()?));
+        }
 
         Ok(())
     }
@@ -105,6 +119,9 @@ impl Repository for Gitea {
             .query(&[("ref", reference)])
             .header(AUTHORIZATION, self.auth_header())
             .send()?;
+        if !response.status().is_success() {
+            return Err(anyhow!(response.text()?));
+        }
         Ok(response.bytes()?)
     }
 

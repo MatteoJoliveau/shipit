@@ -7,7 +7,7 @@ use self::gitea::Gitea;
 mod gitea;
 
 #[derive(Deserialize)]
-#[serde(tag = "templater")]
+#[serde(tag = "provider", rename_all = "snake_case")]
 pub enum Provider {
     Gitea {
         api_url: String,

@@ -48,7 +48,7 @@ fn main() -> Result<()> {
         )?,
         changes: serde_json::from_str(
             matches
-                .get_one::<String>("changes")
+                .get_one::<String>("changeset")
                 .ok_or_else(|| anyhow!("Missing changeset (--changeset or SHIPIT_CHANGES)"))?
                 .as_str(),
         )?,
@@ -59,7 +59,7 @@ fn main() -> Result<()> {
 
     let mut repo = get_repository(config.provider);
 
-    let changes = mutate(&repo, &config.changes)?;
+    let changes = mutate(&repo, &config.branch, &config.changes)?;
 
     repo.commit(CommitRequest {
         branch: config.branch,
