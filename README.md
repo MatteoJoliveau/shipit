@@ -4,7 +4,7 @@
 
 ## Why?
 
-GitOps-enabled environments use git repositories to store deployment manifests. It's often wanted to have the CI update those repositories, but a lot of time is wasted in the whole "git clone/commit/push" ordeal. `shipit` uses REST APIs available in certain Git providers (eg. GitHub, GitLab, see below for the full list of supported APIs) to make the process super snappy!
+GitOps-enabled environments use git repositories to store deployment manifests. It's common to have the CI update those repositories but the traditional "git clone/commit/push" approach can lead to a lot of time wasted downloading unneeded info. `shipit` leverages REST APIs provided by certain Git providers (such as GitHub, GitLab, and more—see the list below) to make the process super snappy!
 
 ## Support table
 
