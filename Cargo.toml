@@ -1,0 +1,13 @@
+[package]
+name = "shipit"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+license-file = "LICENSE.txt"
+
+[dependencies]
+anyhow = "1"
+bytes = { version = "1", features = ["serde"] }
+serde = "1.0"
+serde_json = "1.0"
+json-patch = "1.0"
