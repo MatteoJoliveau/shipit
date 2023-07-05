@@ -1,0 +1,5 @@
+/target
+/.github
+LICENSE.txt
+README.md
+*.ps1
