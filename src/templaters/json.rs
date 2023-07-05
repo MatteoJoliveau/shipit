@@ -9,11 +9,9 @@ fn patch(base: &mut Value, path: &str, value: &str) -> Result<()> {
     let mut current = base;
     for part in path.split('/') {
         // if part is numeric, treat it as array index
-        let numeric_part = part.parse::<usize>();
-        if numeric_part.is_ok() {
-            let index = numeric_part.unwrap();
+        if let Ok(numeric_part) = part.parse::<usize>() {
             current = current
-                .get_mut(index)
+                .get_mut(numeric_part)
                 .ok_or_else(|| anyhow!("could not find index path {}", path))?;
             continue;
         }
@@ -28,11 +26,11 @@ fn patch(base: &mut Value, path: &str, value: &str) -> Result<()> {
 }
 
 pub fn update_file(file: &Bytes, changes: &HashMap<String, String>) -> Result<Bytes> {
-    let mut parsed = serde_json::from_slice(&file)?;
+    let mut parsed = serde_json::from_slice(file)?;
 
     // apply changes
     for (path, value) in changes {
-        patch(&mut parsed, path, &value)?;
+        patch(&mut parsed, path, value)?;
     }
 
     Ok(Bytes::from(serde_json::to_vec(&parsed)?))

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub type FileList = HashMap<String, Bytes>;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct CommitRequest {
     pub branch: String,
     pub author: String,
@@ -13,7 +13,7 @@ pub struct CommitRequest {
 
 impl CommitRequest {
     /// split_author splits the author field to return a tuple of (name, email) fields.
-    pub fn split_author(self: &Self) -> (String, String) {
+    pub fn split_author(&self) -> (String, String) {
         match self.author.split_once('<') {
             None => (self.author.to_string(), "".to_string()),
             Some((name, email)) => (
@@ -22,17 +22,6 @@ impl CommitRequest {
                     .trim_matches(|c: char| c.is_whitespace() || c == '<' || c == '>')
                     .to_string(),
             ),
-        }
-    }
-}
-
-impl Default for CommitRequest {
-    fn default() -> Self {
-        CommitRequest {
-            branch: Default::default(),
-            author: Default::default(),
-            message: Default::default(),
-            files: Default::default(),
         }
     }
 }

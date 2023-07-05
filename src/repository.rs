@@ -9,16 +9,9 @@ pub trait Repository {
     fn commit(&mut self, payload: CommitRequest) -> Result<()>;
 }
 
+#[derive(Default)]
 pub struct InMemoryRepository {
     files: HashMap<String, Bytes>,
-}
-
-impl Default for InMemoryRepository {
-    fn default() -> Self {
-        InMemoryRepository {
-            files: Default::default(),
-        }
-    }
 }
 
 impl Repository for InMemoryRepository {
@@ -27,7 +20,7 @@ impl Repository for InMemoryRepository {
         self.files
             .get(&key)
             .cloned()
-            .ok_or(anyhow::anyhow!("File not found"))
+            .ok_or_else(|| anyhow::anyhow!("File not found"))
     }
 
     fn commit(&mut self, payload: CommitRequest) -> Result<()> {

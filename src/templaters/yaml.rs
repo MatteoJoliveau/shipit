@@ -8,11 +8,9 @@ fn patch(base: &mut Value, path: &str, value: &str) -> Result<()> {
     let mut current = base;
     for part in path.split('.') {
         // if part is numeric, treat it as array index
-        let numeric_part = part.parse::<usize>();
-        if numeric_part.is_ok() {
-            let index = numeric_part.unwrap();
+        if let Ok(numeric_part) = part.parse::<usize>() {
             current = current
-                .get_mut(index)
+                .get_mut(numeric_part)
                 .ok_or_else(|| anyhow!("could not find index path {}", path))?;
             continue;
         }
@@ -31,7 +29,7 @@ pub fn update_file(file: &Bytes, changes: &HashMap<String, String>) -> Result<By
 
     // apply changes
     for (path, value) in changes {
-        patch(&mut parsed, path, &value)?;
+        patch(&mut parsed, path, value)?;
     }
 
     Ok(Bytes::from(serde_yaml::to_string(&parsed)?))

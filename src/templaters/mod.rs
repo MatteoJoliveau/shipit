@@ -30,12 +30,12 @@ pub fn mutate(
     for mutation in mutations {
         let delta = match mutation {
             Mutation::Json { file, changes } => {
-                let to_patch = repository.get(&file, branch)?;
+                let to_patch = repository.get(file, branch)?;
                 let patched = json::update_file(&to_patch, changes)?;
                 FileList::from([(file.into(), patched)])
             }
             Mutation::Yaml { file, changes } => {
-                let to_patch = repository.get(&file, branch)?;
+                let to_patch = repository.get(file, branch)?;
                 let patched = yaml::update_file(&to_patch, changes)?;
                 FileList::from([(file.into(), patched)])
             }
