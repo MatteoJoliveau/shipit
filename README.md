@@ -20,7 +20,8 @@ GitOps-enabled environments use git repositories to store deployment manifests. 
 
 ### Templaters
 
-- [JSON Patch](https://jsonpatch.com/) for JSON files
+- JSON (generic)
+- YAML (generic)
 
 [azure devops]: https://azure.microsoft.com/en-us/services/devops/repos/
 [gitlab]: https://gitlab.com
