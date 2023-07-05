@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::{bail, Result};
+use anyhow::{anyhow, Result};
 use bytes::Bytes;
 use serde_json::Value;
 
@@ -12,18 +12,16 @@ fn patch(base: &mut Value, path: &str, value: &str) -> Result<()> {
         let numeric_part = part.parse::<usize>();
         if numeric_part.is_ok() {
             let index = numeric_part.unwrap();
-            match current.get_mut(index) {
-                Some(part) => current = part,
-                None => bail!("could not find index path {}", path),
-            }
+            current = current
+                .get_mut(index)
+                .ok_or_else(|| anyhow!("could not find index path {}", path))?;
             continue;
         }
 
         // otherwise treat it as object key
-        match current.get_mut(part) {
-            Some(part) => current = part,
-            None => bail!("could not find object path {}", path),
-        }
+        current = current
+            .get_mut(part)
+            .ok_or_else(|| anyhow!("could not find object path {}", path))?;
     }
     *current = Value::from(value);
     Ok(())
