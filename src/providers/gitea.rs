@@ -110,6 +110,12 @@ impl Gitea {
 
 impl Repository for Gitea {
     fn get(&self, path: &str, reference: &str) -> Result<Bytes> {
+        log::debug!(
+            "fetching file path={path} project={} ref={reference} api_url={}",
+            self.project_id,
+            self.api_url
+        );
+
         let response = self
             .client
             .get(format!(
@@ -126,6 +132,15 @@ impl Repository for Gitea {
     }
 
     fn commit(&mut self, payload: CommitRequest) -> Result<()> {
+        log::debug!(
+            "committing changes author={} ref={} message={} project={} api_url={}",
+            payload.author,
+            payload.branch,
+            payload.message,
+            self.project_id,
+            self.api_url
+        );
+
         let multiple_files = payload.files.len() > 1;
         for file in payload.files {
             self.commit_file(CommitRequest {

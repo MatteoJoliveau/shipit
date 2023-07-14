@@ -2,7 +2,6 @@ use anyhow::{anyhow, Result};
 use clap::{arg, command};
 use commit::CommitRequest;
 use providers::{get_repository, Provider};
-use repository::Repository;
 use templaters::{mutate, Mutation};
 
 mod commit;
@@ -19,6 +18,8 @@ struct Task {
 }
 
 fn main() -> Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().filter("SHIPIT_LOG"));
+
     let matches = command!()
         .arg(arg!(-p --provider <provider> "Provider info (as JSON)").env("SHIPIT_PROVIDER"))
         .arg(arg!(-c --changeset <changes> "Changes to apply (as JSON)").env("SHIPIT_CHANGES"))
@@ -57,14 +58,24 @@ fn main() -> Result<()> {
         message: matches.get_one::<String>("message").unwrap().into(),
     };
 
+    log::debug!("using provider {}", config.provider.name());
+
     let mut repo = get_repository(config.provider);
 
-    let changes = mutate(&repo, &config.branch, &config.changes)?;
+    log::debug!("computing changes: {:?} to branch {}", config.changes, config.branch);
+    
+    let changes = mutate(&*repo, &config.branch, &config.changes)?;
 
-    repo.commit(CommitRequest {
+    let commit = CommitRequest {
         branch: config.branch,
         author: config.author,
         message: config.message,
         files: changes,
-    })
+    };
+
+    repo.commit(commit)?;
+
+    log::info!("done!");
+
+    Ok(())
 }
