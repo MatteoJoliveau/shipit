@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub type FileList = HashMap<String, Bytes>;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct CommitRequest {
     pub branch: String,
     pub author: String,
