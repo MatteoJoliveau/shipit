@@ -62,8 +62,12 @@ fn main() -> Result<()> {
 
     let mut repo = get_repository(config.provider);
 
-    log::debug!("computing changes: {:?} to branch {}", config.changes, config.branch);
-    
+    log::debug!(
+        "computing changes: {:?} to branch {}",
+        config.changes,
+        config.branch
+    );
+
     let changes = mutate(&*repo, &config.branch, &config.changes)?;
 
     let commit = CommitRequest {

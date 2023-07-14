@@ -157,7 +157,14 @@ impl Repository for Gitlab {
     }
 
     fn commit(&mut self, payload: CommitRequest) -> Result<()> {
-        log::debug!("committing changes author={} ref={} message={} project={} api_url={}", payload.author, payload.branch, payload.message, self.project_id, self.api_url);
+        log::debug!(
+            "committing changes author={} ref={} message={} project={} api_url={}",
+            payload.author,
+            payload.branch,
+            payload.message,
+            self.project_id,
+            self.api_url
+        );
 
         let (author_name, author_email) = payload.split_author();
 
