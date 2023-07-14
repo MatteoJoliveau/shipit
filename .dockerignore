@@ -1,5 +1,7 @@
-/target
-/.github
-LICENSE.txt
-README.md
-*.ps1
+**
+
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain.toml
+!src
+!.cargo
